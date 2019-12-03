@@ -116,24 +116,27 @@ fn build_static_lib() -> bool {
 }
 
 fn use_installed() {
-    println!("[build.rs] Checking for a shared library...");
+    #[cfg(feature = "verify_link")]
+    {
+        println!("[build.rs] Checking for a shared library...");
 
-    // Use only the compiler. The alternative `.get_compiler().to_command()` includes a bunch of
-    // flags that are superfluous to the purpose of just checking if this file builds.
-    let mut cmd = std::process::Command::new(cc::Build::new().get_compiler().path());
+        // Use only the compiler. The alternative `.get_compiler().to_command()` includes a bunch of
+        // flags that are superfluous to the purpose of just checking if this file builds.
+        let mut cmd = std::process::Command::new(cc::Build::new().get_compiler().path());
 
-    // Link to some installed `graphite2` shared library and build a simple executable.
-    cmd.arg("-o").arg("/dev/null").arg("graphite2/tests/examples/simple.c").arg("-lgraphite2");
-    println!("[build.rs] Command: {:?}", cmd);
+        // Link to some installed `graphite2` shared library and build a simple executable.
+        cmd.arg("-o").arg("/dev/null").arg("graphite2/tests/examples/simple.c").arg("-lgraphite2");
+        println!("[build.rs] Command: {:?}", cmd);
 
-    // Run the command and check the status.
-    let status = cmd.status().expect("[build.rs] Command failed to execute");
-    if status.success() {
-        println!("[build.rs] Command succeeded.");
-    } else {
-        match status.code() {
-            Some(code) => panic!("[build.rs] Command exited with status code: {}", code),
-            None       => panic!("[build.rs] Command terminated by signal.")
+        // Run the command and check the status.
+        let status = cmd.status().expect("[build.rs] Command failed to execute");
+        if status.success() {
+            println!("[build.rs] Command succeeded.");
+        } else {
+            match status.code() {
+                Some(code) => panic!("[build.rs] Command exited with status code: {}", code),
+                None       => panic!("[build.rs] Command terminated by signal.")
+            }
         }
     }
 }

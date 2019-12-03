@@ -14,5 +14,6 @@ vcpkg = { version = "0.2", optional = true }
 [target.'cfg(target_env = "msvc")'.build-dependencies]
 
 [features]
-default = ["pkg-config", "vcpkg", "static"]
+default = ["pkg-config", "vcpkg", "static", "verify_link"]
 static = ["cmake"]
+verify_link = []
